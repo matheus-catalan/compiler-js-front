@@ -36,7 +36,7 @@ export default {
     ],
   ],
   axios: {
-    baseURL: 'https://compiler-js.herokuapp.com/',
+    baseURL: 'http://localhost:3030/',
   },
   vuetify: {
     customVariables: ['~/assets/variables.scss'],

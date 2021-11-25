@@ -4,7 +4,7 @@
       class="example d-flex align-center justify-center flex-column"
       style="background-color: #282a36"
     >
-      <v-breadcrumbs :items="items" class="m-0 p-0 mt-5" style="width: 100%">
+      <v-breadcrumbs :items="items" class="m-0 p-0" style="width: 100%">
         <template #divider>
           <v-icon>mdi-chevron-right</v-icon>
         </template>
@@ -103,7 +103,7 @@ div.CodeMirror {
 .example {
   margin-top: 48px;
   display: flex;
-  height: 100vh;
+  height: 90vh;
   width: 100%;
   position: absolute;
   .codemirror {

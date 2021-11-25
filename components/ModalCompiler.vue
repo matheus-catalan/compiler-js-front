@@ -24,7 +24,7 @@
       </v-card-title>
       <v-card-text>
         <v-stepper v-model="step" vertical loading>
-          <v-stepper-step :complete="step > 1" step="1">
+          <v-stepper-step :complete="step > 1" step="1" editable>
             Analise lexica
             <small>Clique em continuar para fazer a analise lexica</small>
           </v-stepper-step>
@@ -37,30 +37,31 @@
               class="elevation-1 mb-5"
             ></v-data-table>
 
-            <v-btn color="primary" @click="lexical"> Analisar tokens </v-btn>
-            <v-btn color="success" @click="nextStep"> Próxima etapa </v-btn>
+            <v-btn v-if="!proccess.lexical" color="primary" @click="lexical">
+              Analisar tokens
+            </v-btn>
+            <v-btn v-if="proccess.lexical" color="success" @click="nextStep">
+              Próxima etapa
+            </v-btn>
           </v-stepper-content>
 
-          <v-stepper-step :complete="step > 2" step="2">
+          <v-stepper-step :complete="step > 2" step="2" editable>
             Análise Sintática
           </v-stepper-step>
           <v-stepper-content step="2">
-            <v-card color="grey lighten-1" class="mb-12" height="200px">
-              oi
-            </v-card>
-            <v-btn color="primary" @click="step = 3"> Continue </v-btn>
-            <v-btn text> Cancel </v-btn>
-          </v-stepper-content>
+            <v-data-table
+              :headers="headerSintatic"
+              :items="parsed.body"
+              :items-per-page="5"
+              class="elevation-1 mb-5"
+            ></v-data-table>
 
-          <v-stepper-step :complete="step > 2" step="2">
-            Análise Semântica
-          </v-stepper-step>
-          <v-stepper-content step="2">
-            <v-card color="grey lighten-1" class="mb-12" height="200px">
-              oi
-            </v-card>
-            <v-btn color="primary" @click="step = 3"> Continue </v-btn>
-            <v-btn text> Cancel </v-btn>
+            <v-btn color="primary" @click="sintatic">
+              Analisar Sintaticamente
+            </v-btn>
+            <v-btn v-if="proccess.sintatic" color="success" @click="nextStep">
+              Próxima etapa
+            </v-btn>
           </v-stepper-content>
         </v-stepper>
       </v-card-text>
@@ -77,7 +78,20 @@ export default {
       step: 1,
       show: this.openDialogCompiler,
       tokens: [],
+      proccess: {
+        lexical: false,
+        sintatic: false,
+      },
       headerTokens: [
+        {
+          text: 'Tipo',
+          align: 'start',
+          sortable: false,
+          value: 'type',
+        },
+        { text: 'valor', value: 'value' },
+      ],
+      headerSintatic: [
         {
           text: 'Tipo',
           align: 'start',
@@ -97,19 +111,39 @@ export default {
   methods: {
     async lexical() {
       await this.$axios
-        .post('/compiler', {
+        .post('/compiler/lexical', {
           content: this.$store.state.currentFile.content,
         })
         .then(({ data }) => {
-          this.tokens = data.tokens
+          if (typeof data.tokens === 'string') {
+            this.$toast.error(data.tokens)
+          } else {
+            this.tokens = data.tokens
+            this.proccess.lexical = true
+          }
+        })
+        .catch((err) => {
+          console.log(err, 'errr')
+        })
+    },
+    async sintatic() {
+      await this.$axios
+        .post('/compiler/sintatic', {
+          content: this.$store.state.currentFile.content,
+        })
+        .then(({ data }) => {
+          console.log(data.parsed)
           this.parsed = data.parsed
-          console.log(data)
+          console.log(this.parsed.body)
+          this.proccess.sintatic = true
         })
         .catch((err) => {
           console.log(err)
         })
     },
-    nextStep() {},
+    nextStep() {
+      this.step++
+    },
   },
 }
 </script>

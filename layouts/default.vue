@@ -101,7 +101,7 @@
       />
     </v-main>
 
-    <v-footer
+    <!-- <v-footer
       absolute
       app
       style="z-index: 999999"
@@ -110,7 +110,7 @@
       class="text-center"
     >
       <span style="font-size: 10px">&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    </v-footer> -->
   </v-app>
 </template>
 
